@@ -5,10 +5,33 @@
       {
         "name": "DPD",
         "regex": [
-          "\\s*(?<SerialNumber>(\\d{14}[A-Z\\d]|\\d{14}|\\d{12}|\\d{10}]))\\s*"
+          "\\s*(?<DepotCode>(\\d{0,4}))(?<ServiceType>(\\d{2}))(?<SerialNumber>(\\d{8}))(?<CheckDigit>([A-Z\\d]))\\s*"
         ],
         "validation": {
+          "checksum": {
+            "name": "mod36"
+          }
         },
+        "additional": [
+          {
+            "name": "Service Type",
+            "regex_group_name": "ServiceType",
+            "lookup": [
+              {
+                "matches_regex": "[0-4][0-9]",
+                "name": "Standard parcel labels"
+              },
+              {
+                "matches_regex": "[5-8][0-9]|9[0-8]",
+                "name": "Parcel labels printed by the customer"
+              },
+              {
+                "matches": "99",
+                "name": "DPD GmbH & Co. (for special purposes)"
+              }
+            ]
+          }
+        ],
         "tracking_url": "https://tracking.dpd.de/status/en_US/parcel/%s",
         "test_numbers": {
           "valid": [
